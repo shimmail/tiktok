@@ -1,4 +1,4 @@
-package org.example.tiktok.pojo;
+package org.example.tiktok.pojo.entity;
 
 import java.time.LocalDateTime;
 

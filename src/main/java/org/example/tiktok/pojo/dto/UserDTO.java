@@ -1,13 +1,12 @@
-package org.example.tiktok.pojo;
+package org.example.tiktok.pojo.dto;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 /**
  * 用户
  */
 @lombok.Data
-public class User {
+public class UserDTO {
     /**
      * 用户 ID，用户唯一标识符
      */
@@ -18,10 +17,6 @@ public class User {
      */
     private String username;
 
-    /**
-     * 密码，需要进行加密（bcrypt）
-     */
-    private String password;
 
     /**
      * 头像，图片链接，可以是本地也可以是云存储
