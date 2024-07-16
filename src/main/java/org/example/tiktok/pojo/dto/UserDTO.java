@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 public class UserDTO {
     /**
      * 用户 ID，用户唯一标识符
+     * ID的生成请使用雪花算法等（MybatisPlus有对应的ID生成策略）
      */
     private String id;
 
@@ -17,6 +18,10 @@ public class UserDTO {
      */
     private String username;
 
+    /**
+     * 密码，需要进行加密（bcrypt）
+     */
+    private String password;
 
     /**
      * 头像，图片链接，可以是本地也可以是云存储

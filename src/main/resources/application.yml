@@ -28,3 +28,7 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQL5Dialect
+
+  mybatis-plus:
+    mapper-locations: mapper/*.xml
+    type-aliases-package: org.example.tiktok.pojo.entity

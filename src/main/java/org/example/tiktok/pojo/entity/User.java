@@ -1,5 +1,8 @@
 package org.example.tiktok.pojo.entity;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
+
 import java.time.LocalDateTime;
 
 /**
@@ -10,6 +13,7 @@ public class User {
     /**
      * 用户 ID，用户唯一标识符
      */
+    @TableId(type = IdType.ASSIGN_ID)
     private String id;
 
     /**

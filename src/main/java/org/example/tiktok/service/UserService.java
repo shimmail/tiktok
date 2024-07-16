@@ -5,5 +5,6 @@ import org.example.tiktok.result.Result;
 
 public interface UserService {
 
+
     Result register(UserDTO userDTO);
 }

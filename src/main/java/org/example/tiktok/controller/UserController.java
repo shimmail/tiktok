@@ -18,6 +18,11 @@ public class UserController {
 
     @PostMapping("/register")
     public Result register(@RequestBody UserDTO userDTO) {
-        return userService.register(userDTO);
+        try {
+            userService.register(userDTO);
+            return Result.success();
+        } catch (Exception e) {
+            return Result.error(e.getMessage());
+        }
     }
 }
