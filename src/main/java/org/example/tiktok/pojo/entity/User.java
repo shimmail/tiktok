@@ -1,6 +1,5 @@
 package org.example.tiktok.pojo.entity;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 /**
