@@ -6,7 +6,7 @@ public class PasswordUtil {
     private static final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
     /**
-     * 加密密码
+     * bcrypt加密密码
      *
      * @param password 原始密码
      * @return 加密后的密码
