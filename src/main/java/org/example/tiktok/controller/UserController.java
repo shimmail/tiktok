@@ -21,12 +21,13 @@ public class UserController {
     public Result register(@RequestParam("username") String username,
                            @RequestParam("password") String password) {
         try {
+            log.info("Registering user: {}", username);
             UserDTO userDTO = new UserDTO();
             userDTO.setUsername(username);
             userDTO.setPassword(password);
-            userService.register(userDTO);
-            return Result.success();
+            return userService.register(userDTO);
         } catch (Exception e) {
+            log.error("Failed to register user: {}", username, e);
             return Result.error(e.getMessage());
         }
     }
