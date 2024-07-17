@@ -3,6 +3,7 @@ package org.example.tiktok.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jdk.internal.dynalink.support.NameCodec;
+import lombok.extern.slf4j.Slf4j;
 import org.example.tiktok.mapper.UserMapper;
 import org.example.tiktok.pojo.dto.UserDTO;
 import org.example.tiktok.pojo.entity.User;
@@ -14,7 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-
+@Slf4j
 @Service
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
 

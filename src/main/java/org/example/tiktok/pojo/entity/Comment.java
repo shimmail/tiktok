@@ -1,11 +1,17 @@
 package org.example.tiktok.pojo.entity;
 
+import com.baomidou.mybatisplus.annotation.TableName;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
 import java.time.LocalDateTime;
 
 /**
  * 评论
  */
-@lombok.Data
+@Data
+@EqualsAndHashCode(callSuper = false)
+@TableName("comment")
 public class Comment {
     /**
      * 子评论数，子评论的数量

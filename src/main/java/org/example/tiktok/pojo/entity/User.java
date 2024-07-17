@@ -2,18 +2,23 @@ package org.example.tiktok.pojo.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.time.LocalDateTime;
 
 /**
  * 用户
  */
-@lombok.Data
+@Data
+@EqualsAndHashCode(callSuper = false)
+@TableName("user")
 public class User {
     /**
      * 用户 ID，用户唯一标识符
      */
-    @TableId(type = IdType.ASSIGN_ID)
+    @TableId(value = "id", type = IdType.ASSIGN_ID)
     private String id;
 
     /**

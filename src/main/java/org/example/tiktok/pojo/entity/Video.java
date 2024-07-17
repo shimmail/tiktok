@@ -1,11 +1,17 @@
 package org.example.tiktok.pojo.entity;
 
+import com.baomidou.mybatisplus.annotation.TableName;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
 import java.time.LocalDateTime;
 
 /**
  * 视频
  */
-@lombok.Data
+@Data
+@EqualsAndHashCode(callSuper = false)
+@TableName("video")
 public class Video {
     /**
      * 视频id，唯一标识符，可选自增/雪花/UUID/其他
