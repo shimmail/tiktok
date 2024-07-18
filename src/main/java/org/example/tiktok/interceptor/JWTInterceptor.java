@@ -1,9 +1,11 @@
 package org.example.tiktok.interceptor;
 
+
 import com.auth0.jwt.exceptions.AlgorithmMismatchException;
 import com.auth0.jwt.exceptions.SignatureVerificationException;
 import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.example.tiktok.exception.JWTException;
 import org.example.tiktok.util.JWTUtils;
 import org.springframework.web.servlet.HandlerInterceptor;
 
@@ -19,30 +21,18 @@ public class JWTInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        Map<String,Object> map = new HashMap<>();
-        //令牌建议是放在请求头中，获取请求头中令牌
         String token = request.getHeader("token");
-        try{
-            JWTUtils.verify(token);//验证令牌
-            return true;//放行请求
+        try {
+            JWTUtils.verify(token); // 验证令牌
+            return true; // 放行请求
         } catch (SignatureVerificationException e) {
-            e.printStackTrace();
-            map.put("msg","无效签名");
+            throw new JWTException("无效签名");
         } catch (TokenExpiredException e) {
-            e.printStackTrace();
-            map.put("msg","token过期");
+            throw new JWTException("token过期");
         } catch (AlgorithmMismatchException e) {
-            e.printStackTrace();
-            map.put("msg","token算法不一致");
+            throw new JWTException("token算法不一致");
         } catch (Exception e) {
-            e.printStackTrace();
-            map.put("msg","token失效");
+            throw new JWTException("token失效");
         }
-        map.put("state",false);//设置状态
-        //将map转化成json，response使用的是Jackson
-        String json = new ObjectMapper().writeValueAsString(map);
-        response.setContentType("application/json;charset=UTF-8");
-        response.getWriter().print(json);
-        return false;
     }
 }

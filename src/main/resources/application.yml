@@ -9,7 +9,22 @@ spring:
     password: 1234
     driver-class-name: com.mysql.cj.jdbc.Driver
 
+#文件上传限制
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 1000MB
 #mybatis-plus配置控制台打印完整带参数SQL语句
 mybatis-plus:
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+#阿里云配置
+aliyun:
+  oss:
+    endpoint: oss-cn-hangzhou.aliyuncs.com
+    accessKeyId: LTAI5tRvYdjnRvUKbpkDQqwt
+    accessKeySecret: S8zAjVmpXZgGAGvn9OgtdEzms6lj9z
+    bucketName: west-2
+    urlPrefix: https://west-2.oss-cn-hangzhou.aliyuncs.com/
+

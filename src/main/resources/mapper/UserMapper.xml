@@ -3,4 +3,9 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.example.tiktok.mapper.UserMapper">
 
+    <update id="updateAvatarUrlByUsername">
+        UPDATE user
+        SET avatar_url = #{avatarUrl}
+        WHERE username = #{username}
+    </update>
 </mapper>

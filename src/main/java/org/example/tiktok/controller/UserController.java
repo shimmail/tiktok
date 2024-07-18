@@ -1,23 +1,16 @@
 package org.example.tiktok.controller;
 
-import com.auth0.jwt.exceptions.AlgorithmMismatchException;
-import com.auth0.jwt.exceptions.SignatureVerificationException;
-import com.auth0.jwt.exceptions.TokenExpiredException;
+import com.aliyun.oss.OSS;
 import lombok.extern.slf4j.Slf4j;
-import org.example.tiktok.exception.PasswordErrorException;
-import org.example.tiktok.exception.UserNotFoundException;
 import org.example.tiktok.pojo.dto.UserDTO;
-import org.example.tiktok.pojo.entity.User;
 import org.example.tiktok.pojo.vo.UserVO;
 import org.example.tiktok.result.Result;
 import org.example.tiktok.service.UserService;
 import org.example.tiktok.util.JWTUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletRequest;
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -27,7 +20,8 @@ import java.util.Map;
 public class UserController {
     @Autowired
     private UserService userService;
-
+    @Autowired
+    private OSS ossClient;
 
     //用户注册
     @PostMapping("/register")
@@ -65,14 +59,9 @@ public class UserController {
             payload.put("name", userVO.getUsername());
             //生成JWT令牌
             String token = JWTUtils.getToken(payload);
-            map.put("state",true);
-            map.put("msg","认证成功");
-            map.put("token",token);//响应token
             log.info("登录成功, token: {}", token);
             return Result.success(userVO);
         }catch (Exception e) {
-            map.put("state","false");
-            map.put("msg",e.getMessage());
             return Result.error(e.getMessage());
         }
     }
@@ -92,6 +81,22 @@ public class UserController {
         // 验证Access-Token
         try {
             JWTUtils.verify(accessToken);
+            return Result.success(userVO);
+        } catch (Exception e) {
+            return Result.error(e.getMessage());
+        }
+    }
+
+    //上传头像
+    @PutMapping("/avatar/upload")
+    public Result<UserVO> uploadAvatar(@RequestParam("data") MultipartFile avatar,
+                                         @RequestHeader("Access-Token") String accessToken){
+        // 验证Access-Token
+        try {
+            JWTUtils.verify(accessToken);
+            //解析token获得username
+            String username = JWTUtils.getUsernameFromToken(accessToken);
+            UserVO userVO = userService.uploadAvatar(avatar,username);
             return Result.success(userVO);
         } catch (Exception e) {
             return Result.error(e.getMessage());
