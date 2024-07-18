@@ -22,7 +22,7 @@ public class JWTUtils {
             builder.withClaim(k,v);
         });
         Calendar instance = Calendar.getInstance();
-        instance.add(Calendar.SECOND,7);
+        instance.add(Calendar.SECOND,600);//令牌期限600秒
         builder.withExpiresAt(instance.getTime());
         return builder.sign(Algorithm.HMAC256(SIGNATURE)).toString();
     }

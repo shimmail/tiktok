@@ -49,7 +49,7 @@ public class UserController {
     @PostMapping("/login")
     public Result<UserVO> login(@RequestParam("username") String username,
                         @RequestParam("password") String password) {
-
+        Map<String,Object> map = new HashMap<>();
         UserVO userVO = new UserVO();
         try {
             UserDTO userDTO = new UserDTO();
@@ -65,9 +65,14 @@ public class UserController {
             payload.put("name", userVO.getUsername());
             //生成JWT令牌
             String token = JWTUtils.getToken(payload);
+            map.put("state",true);
+            map.put("msg","认证成功");
+            map.put("token",token);//响应token
             log.info("登录成功, token: {}", token);
             return Result.success(userVO);
         }catch (Exception e) {
+            map.put("state","false");
+            map.put("msg",e.getMessage());
             return Result.error(e.getMessage());
         }
     }
@@ -76,19 +81,20 @@ public class UserController {
     @GetMapping("/info")
     public Result<UserVO> getStudentById(@RequestParam("user_id") String id,
                                          @RequestHeader("Access-Token") String accessToken){
+        UserVO userVO = new UserVO();
+        // 获取用户信息
+        try {
+            userVO = userService.getUserById(id);
+        }catch (Exception e){
+            return Result.error(e.getMessage());
+        }
+
         // 验证Access-Token
         try {
             JWTUtils.verify(accessToken);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-
-        // 获取用户信息
-        UserVO userVO = userService.getUserById(id);
-        if (userVO != null) {
             return Result.success(userVO);
-        } else {
-            return Result.error("用户不存在");
+        } catch (Exception e) {
+            return Result.error(e.getMessage());
         }
     }
 }
