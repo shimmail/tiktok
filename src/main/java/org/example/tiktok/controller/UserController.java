@@ -42,64 +42,56 @@ public class UserController {
     //用户登录
     @PostMapping("/login")
     public Result<UserVO> login(@RequestParam("username") String username,
-                        @RequestParam("password") String password) {
-        Map<String,Object> map = new HashMap<>();
+                                @RequestParam("password") String password) {
+        Map<String, Object> map = new HashMap<>();
         UserVO userVO = new UserVO();
         try {
             UserDTO userDTO = new UserDTO();
             userDTO.setUsername(username);
             userDTO.setPassword(password);
             userVO = userService.login(userDTO);
-        }catch (Exception e) {
-        return Result.error(e.getMessage());
-    }
+        } catch (Exception e) {
+            return Result.error(e.getMessage());
+        }
         try {
             //登录成功后生成token
-            Map<String, String> payload = new HashMap<>();
-            payload.put("name", userVO.getUsername());
             //生成JWT令牌
-            String token = JWTUtils.getToken(payload);
+            String token = JWTUtils.getToken(userVO.getUsername(), userVO.getId());
             log.info("登录成功, token: {}", token);
             return Result.success(userVO);
-        }catch (Exception e) {
+        } catch (Exception e) {
             return Result.error(e.getMessage());
         }
     }
 
     //根据id查询用户
     @GetMapping("/info")
-    public Result<UserVO> getStudentById(@RequestParam("user_id") String id,
-                                         @RequestHeader("Access-Token") String accessToken){
+    public Result<UserVO> getStudentById(@RequestParam("user_id") String id) {
         UserVO userVO = new UserVO();
-        // 获取用户信息
         try {
+            // 获取用户信息
             userVO = userService.getUserById(id);
-        }catch (Exception e){
-            return Result.error(e.getMessage());
-        }
-
-        // 验证Access-Token
-        try {
-            JWTUtils.verify(accessToken);
+            log.info("查询成功：{}" ,userVO);
             return Result.success(userVO);
         } catch (Exception e) {
             return Result.error(e.getMessage());
         }
+
     }
 
     //上传头像
     @PutMapping("/avatar/upload")
     public Result<UserVO> uploadAvatar(@RequestParam("data") MultipartFile avatar,
-                                         @RequestHeader("Access-Token") String accessToken){
-        // 验证Access-Token
+                                       @RequestHeader("Access-Token") String accessToken) {
         try {
-            JWTUtils.verify(accessToken);
             //解析token获得username
-            String username = JWTUtils.getUsernameFromToken(accessToken);
-            UserVO userVO = userService.uploadAvatar(avatar,username);
+            String id = JWTUtils.getId(accessToken);
+            UserVO userVO = userService.uploadAvatar(avatar, id);
             return Result.success(userVO);
         } catch (Exception e) {
             return Result.error(e.getMessage());
         }
     }
+
+
 }

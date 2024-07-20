@@ -1,5 +1,7 @@
 package org.example.tiktok.result;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -12,6 +14,15 @@ public class Result<T> implements Serializable {
 
     private BaseResult base; // 基础信息
     private T data; // 数据
+
+    public String toJson() {
+        try {
+            return new ObjectMapper().writeValueAsString(this);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            return "{}";
+        }
+    }
 
     @Data
     public static class BaseResult {

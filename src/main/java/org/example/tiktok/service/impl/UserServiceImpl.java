@@ -14,11 +14,12 @@ import org.example.tiktok.pojo.entity.User;
 import org.example.tiktok.pojo.vo.UserVO;
 import org.example.tiktok.result.Result;
 import org.example.tiktok.service.UserService;
-import org.example.tiktok.util.AliOSSUtils;
+import org.example.tiktok.util.AliOSSUtil;
 import org.example.tiktok.util.PasswordUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -29,7 +30,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Autowired
     private UserMapper userMapper;
 
+    @Autowired
+    private AliOSSUtil aliOSSUtils;
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public Result register(UserDTO userDTO) {
         // 检查用户名是否已存在
         User existingUser = userMapper.selectOne(new QueryWrapper<User>().eq("username", userDTO.getUsername()));
@@ -50,6 +54,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public UserVO login(UserDTO userDTO) {
         User user = userMapper.selectOne(new QueryWrapper<User>().eq("username", userDTO.getUsername()));
         if (user == null) {
@@ -70,6 +75,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     //根据id查询用户
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public UserVO getUserById(String id) {
         User user = userMapper.selectById(id);
         if (user == null) {
@@ -81,20 +87,25 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     //上传头像
     @Override
-    public UserVO uploadAvatar(MultipartFile avatar,String username) throws IOException {
+    @Transactional(rollbackFor = Exception.class)
+    public UserVO uploadAvatar(MultipartFile avatar,String id) throws IOException {
+
         // 上传头像到OSS
-        String avatarUrl =AliOSSUtils.upload(avatar);
+        String avatarUrl =aliOSSUtils.uploadAvatar(avatar);
         // 更新数据库中的用户头像URL
-        userMapper.updateAvatarUrlByUsername(username, avatarUrl);
+        userMapper.updateAvatarUrlByID(id, avatarUrl);
 
         // 获取更新后的用户信息
-        User user = userMapper.selectOne(new QueryWrapper<User>().eq("username", username));
+        User user = userMapper.selectOne(new QueryWrapper<User>().eq("id", id));
 
         // 创建并返回UserVO对象
         UserVO userVO = new UserVO();
         userVO.setId(user.getId());
         userVO.setUsername(user.getUsername());
         userVO.setAvatarUrl(avatarUrl);
+        userVO.setCreatedAt(user.getCreatedAt());
+        userVO.setUpdatedAt(user.getUpdatedAt());
+        userVO.setDeletedAt(user.getDeletedAt());
 
         return userVO;
     }
