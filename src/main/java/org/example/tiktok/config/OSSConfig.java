@@ -1,11 +1,15 @@
 package org.example.tiktok.config;
 import com.aliyun.oss.OSS;
 import com.aliyun.oss.OSSClientBuilder;
+import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
 
 @Configuration
+@Component
+@Data
 public class OSSConfig {
 
     @Value("${aliyun.oss.endpoint}")
@@ -17,6 +21,11 @@ public class OSSConfig {
     @Value("${aliyun.oss.accessKeySecret}")
     private String accessKeySecret;
 
+    @Value("${aliyun.oss.bucketName}")
+    private String bucketName;
+
+    @Value("${aliyun.oss.urlPrefix}")
+    private String urlPrefix;
 
     @Bean
     public OSS ossClient() {

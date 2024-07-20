@@ -1,7 +1,13 @@
 package org.example.tiktok.util;
+import com.aliyun.oss.OSS;
+import com.aliyun.oss.OSSClientBuilder;
 import org.apache.tomcat.util.http.fileupload.FileUploadException;
+import org.example.tiktok.config.OSSConfig;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
+
+import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
@@ -13,16 +19,24 @@ import java.util.regex.Pattern;
  */
 @Component
 public class AliOSSUtil {
+    @Autowired
+    OSSConfig ossConfig;
     private static final Pattern URL_PATTERN = Pattern.compile(
             "^(https?)://[\\w-]+(\\.[\\w-]+)+(/[\\w-./?%&=]*)?$"
     );
-    private String endpoint = "https://oss-cn-hangzhou.aliyuncs.com";
-    private String accessKeyId = "LTAI5tRvYdjnRvUKbpkDQqwt";
-    private String accessKeySecret = "S8zAjVmpXZgGAGvn9OgtdEzms6lj9z";
-    private String bucketName = "west-2";
-    /**
-     * 实现上传图片到OSS
-     */
+    private String endpoint;
+    private String accessKeyId;
+    private String accessKeySecret;
+    private String bucketName;
+
+    @PostConstruct
+    public void init() {
+        this.endpoint = ossConfig.getEndpoint();
+        this.accessKeyId = ossConfig.getAccessKeyId();
+        this.accessKeySecret = ossConfig.getAccessKeySecret();
+        this.bucketName = ossConfig.getBucketName();
+    }
+
     public String uploadAvatar (MultipartFile file) throws IOException {
 
         // 允许的文件类型
@@ -49,12 +63,12 @@ public class AliOSSUtil {
         //创建文件的uuid
         String originalFilename = file.getOriginalFilename();
         String fileName = UUID.randomUUID().toString() + originalFilename.substring(originalFilename.lastIndexOf("."));
-
+/*
         //上传文件到 OSS
-        /*OSS ossClient = new OSSClientBuilder().build(endpoint, accessKeyId, accessKeySecret);
+        OSS ossClient = new OSSClientBuilder().build(endpoint, accessKeyId, accessKeySecret);
         ossClient.putObject(bucketName, fileName, inputStream);
-        ossClient.shutdown();
-*/
+        ossClient.shutdown();*/
+
         //文件访问路径
         String url = endpoint.split("//")[0] + "//" + bucketName + "." + endpoint.split("//")[1] + "/" + fileName;
 
