@@ -3,6 +3,7 @@ package org.example.tiktok.controller;
 import com.aliyun.oss.OSS;
 import lombok.extern.slf4j.Slf4j;
 import org.example.tiktok.pojo.dto.UserDTO;
+import org.example.tiktok.pojo.entity.User;
 import org.example.tiktok.pojo.vo.UserVO;
 import org.example.tiktok.result.Result;
 import org.example.tiktok.service.UserService;
@@ -23,6 +24,7 @@ import java.util.Map;
 public class UserController {
     @Autowired
     private UserService userService;
+
 
     //用户注册
     @PostMapping("/register")

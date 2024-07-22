@@ -40,13 +40,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 // 除上面外的所有请求全部需要鉴权认证
                 .anyRequest().authenticated();
     }
-    @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth
-                // 从数据库读取的用户进行身份认证
-                .userDetailsService(userDetailService)
-                .passwordEncoder(passwordEncoder());
-    }
     @Bean
     @Override
     public AuthenticationManager authenticationManagerBean() throws Exception {

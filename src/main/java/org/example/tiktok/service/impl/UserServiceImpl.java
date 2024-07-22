@@ -1,12 +1,8 @@
 package org.example.tiktok.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import jdk.internal.dynalink.support.NameCodec;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.ibatis.annotations.Mapper;
-import org.example.tiktok.exception.PasswordErrorException;
 import org.example.tiktok.exception.UserNotFoundException;
 import org.example.tiktok.mapper.UserMapper;
 import org.example.tiktok.pojo.dto.UserDTO;
@@ -30,7 +26,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.Objects;
 
 import static net.sf.jsqlparser.util.validation.metadata.NamedObject.user;
@@ -71,7 +66,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         return Result.success();
     }
 
-    @Override
+/*    @Override
     @Transactional(rollbackFor = Exception.class)
     public Result login(UserDTO userDTO) {
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userDTO.getUsername(),userDTO.getPassword());
@@ -89,6 +84,24 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         //把token响应给前端
         log.info("登录成功，token{}",token);
         return Result.success(user);
+    }*/
+
+    @Override
+    public Result<UserVO> login(UserDTO userDTO) {
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userDTO.getUsername(),userDTO.getPassword());
+        Authentication authenticate = authenticationManager.authenticate(authenticationToken);
+        if(Objects.isNull(authenticate)){
+            throw new RuntimeException("用户名或密码错误");
+        }
+        //使用userid生成token
+        LoginUser loginUser = (LoginUser) authenticate.getPrincipal();
+        String userId = loginUser.getUser().getId().toString();
+        String token = JWTUtils.getToken(userId);
+        log.info("token:{}",token);
+        //authenticate存入redis
+        redisCache.setCacheObject("login:"+userId,loginUser);
+
+        return Result.success();
     }
 
     //根据id查询用户
