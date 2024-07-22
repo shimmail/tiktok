@@ -58,7 +58,6 @@ public class UserController {
     }
 
     //根据id查询用户
-    @PreAuthorize("hasAnyRole('user')") // 只能user角色才能访问该方法
     @GetMapping("/info")
     public Result<UserVO> getStudentById(@RequestParam("user_id") String id) {
         UserVO userVO = new UserVO();

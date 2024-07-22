@@ -17,6 +17,9 @@ public interface UserService {
 
     Result login(UserDTO userDTO);
 
+    //登出
+    Result logout();
+
     UserVO getUserById(String id);
 
     UserVO uploadAvatar(MultipartFile avatar,String id) throws IOException;

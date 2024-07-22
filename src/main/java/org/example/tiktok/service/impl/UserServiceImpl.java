@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -28,7 +29,7 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-import static net.sf.jsqlparser.util.validation.metadata.NamedObject.user;
+import static org.example.tiktok.result.Result.success;
 
 @Slf4j
 @Service
@@ -45,6 +46,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Autowired
     private RedisCache redisCache;
 
+    //注册
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Result register(UserDTO userDTO) {
@@ -63,29 +65,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
         userMapper.insert(newUser);
 
-        return Result.success();
+        return success();
     }
 
-/*    @Override
-    @Transactional(rollbackFor = Exception.class)
-    public Result login(UserDTO userDTO) {
-        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userDTO.getUsername(),userDTO.getPassword());
-        Authentication authenticate = authenticationManager.authenticate(authenticationToken);
-        if(Objects.isNull(authenticate)){
-            throw new RuntimeException("用户名或密码错误");
-        }
-        //使用userid生成token
-        LoginUser loginUser = (LoginUser) authenticate.getPrincipal();
-        String userId = loginUser.getUser().getId().toString();
-        String token = JWTUtils.getToken(userId);
-        User user = userMapper.selectById(userId);
-        //authenticate存入redis
-        redisCache.setCacheObject("login:"+userId,loginUser);
-        //把token响应给前端
-        log.info("登录成功，token{}",token);
-        return Result.success(user);
-    }*/
-
+    //登录
     @Override
     public Result<UserVO> login(UserDTO userDTO) {
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userDTO.getUsername(),userDTO.getPassword());
@@ -93,15 +76,27 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         if(Objects.isNull(authenticate)){
             throw new RuntimeException("用户名或密码错误");
         }
+        UserVO uservo = userMapper.selectByUsername(userDTO.getUsername());
         //使用userid生成token
+        String token = JWTUtils.getToken(uservo.getId());
         LoginUser loginUser = (LoginUser) authenticate.getPrincipal();
         String userId = loginUser.getUser().getId().toString();
-        String token = JWTUtils.getToken(userId);
         log.info("token:{}",token);
+
         //authenticate存入redis
         redisCache.setCacheObject("login:"+userId,loginUser);
 
-        return Result.success();
+        return Result.success(uservo);
+    }
+
+    //登出
+    @Override
+    public Result logout() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        LoginUser loginUser = (LoginUser) authentication.getPrincipal();
+        String userid = loginUser.getUser().getId();
+        redisCache.deleteObject("login:"+userid);
+        return success("登出成功");
     }
 
     //根据id查询用户
