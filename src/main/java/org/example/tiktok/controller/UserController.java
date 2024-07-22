@@ -3,11 +3,15 @@ package org.example.tiktok.controller;
 import com.aliyun.oss.OSS;
 import lombok.extern.slf4j.Slf4j;
 import org.example.tiktok.pojo.dto.UserDTO;
+import org.example.tiktok.pojo.entity.User;
 import org.example.tiktok.pojo.vo.UserVO;
 import org.example.tiktok.result.Result;
 import org.example.tiktok.service.UserService;
 import org.example.tiktok.util.JWTUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -20,8 +24,7 @@ import java.util.Map;
 public class UserController {
     @Autowired
     private UserService userService;
-    @Autowired
-    private OSS ossClient;
+
 
     //用户注册
     @PostMapping("/register")
@@ -43,25 +46,15 @@ public class UserController {
     @PostMapping("/login")
     public Result<UserVO> login(@RequestParam("username") String username,
                                 @RequestParam("password") String password) {
-        Map<String, Object> map = new HashMap<>();
-        UserVO userVO = new UserVO();
+        UserDTO userDTO = new UserDTO();
+        userDTO.setUsername(username);
+        userDTO.setPassword(password);
         try {
-            UserDTO userDTO = new UserDTO();
-            userDTO.setUsername(username);
-            userDTO.setPassword(password);
-            userVO = userService.login(userDTO);
+            return userService.login(userDTO);
         } catch (Exception e) {
             return Result.error(e.getMessage());
         }
-        try {
-            //登录成功后生成token
-            //生成JWT令牌
-            String token = JWTUtils.getToken(userVO.getUsername(), userVO.getId());
-            log.info("登录成功, token: {}", token);
-            return Result.success(userVO);
-        } catch (Exception e) {
-            return Result.error(e.getMessage());
-        }
+
     }
 
     //根据id查询用户

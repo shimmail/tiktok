@@ -19,7 +19,7 @@ public class UserVO {
      */
     private String username;
 
-
+    private String role;
     /**
      * 头像，图片链接，可以是本地也可以是云存储
      */

@@ -8,7 +8,6 @@ import com.auth0.jwt.exceptions.SignatureVerificationException;
 import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.JWTVerifier;
-import org.example.tiktok.exception.JWTException;
 import org.example.tiktok.exception.TokenException;
 import org.springframework.stereotype.Component;
 
@@ -17,22 +16,21 @@ import java.util.Date;
 @Component
 public class JWTUtils {
 
-    private static final long EXPIRE_TIME= 1*60*1000;//1分钟有效
+    private static final long EXPIRE_TIME= 5*60*1000;//5分钟有效
     private static final String TOKEN_SECRET="token123";  //密钥盐
 
     /**
      * token生成
      * @return
      */
-    public static String getToken(String name,String userId){
+    public static String getToken(String userId){
 
         String token = null;
         try {
             Date expiresAt = new Date(System.currentTimeMillis() + EXPIRE_TIME);
             token = JWT.create()
-                    .withIssuer("auth0").withClaim("id","id")
-                    .withClaim("username", name)
-                    .withClaim("userId",userId)
+                    .withIssuer("auth0")
+                    .withClaim("id",userId)
                     .withExpiresAt(expiresAt)
                     // 使用了HMAC256加密算法。
                     .sign(Algorithm.HMAC256(TOKEN_SECRET));
@@ -67,11 +65,34 @@ public class JWTUtils {
 
 
 
-    public static String getId(String token){
-        JWTVerifier verifier = JWT.require(Algorithm.HMAC256(TOKEN_SECRET)).withIssuer("auth0").build();
-        DecodedJWT jwt = verifier.verify(token);
-        String id = jwt.getClaim("userId").asString();
-        return id;
+    public static String getId(String token) throws JWTVerificationException {
+        try {
+            // 创建JWT验证器
+            JWTVerifier verifier = JWT.require(Algorithm.HMAC256(TOKEN_SECRET))
+                    .withIssuer("auth0")
+                    .build();
 
+            // 验证Token
+            DecodedJWT decodedJWT = verifier.verify(token);
+
+            // 从Token中提取用户ID
+            return decodedJWT.getClaim("id").asString();
+        } catch (JWTVerificationException e) {
+            e.printStackTrace();
+            throw new JWTVerificationException("Token无效或解析失败");
+        }
+    }
+
+    /**
+     * Parses claims from the token
+     *
+     * @param token the JWT token
+     * @return the claims
+     */
+    public static DecodedJWT parseClaims(String token) {
+        JWTVerifier verifier = JWT.require(Algorithm.HMAC256(TOKEN_SECRET))
+                .withIssuer("auth0")
+                .build();
+        return verifier.verify(token);
     }
 }

@@ -5,8 +5,10 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.springframework.security.core.GrantedAuthority;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * 用户
@@ -31,6 +33,8 @@ public class User {
      */
     private String password;
 
+    private String role;
+
     /**
      * 头像，图片链接，可以是本地也可以是云存储
      */
@@ -48,4 +52,5 @@ public class User {
      * 删除时间
      */
     private LocalDateTime deletedAt;
+
 }

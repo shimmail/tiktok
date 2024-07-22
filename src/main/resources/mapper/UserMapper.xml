@@ -8,5 +8,11 @@
         SET avatar_url = #{avatarUrl}
         WHERE id = #{id}
     </update>
+    <select id="selectByUsername" resultType="org.example.tiktok.pojo.vo.UserVO"
+            parameterType="java.lang.String">
+        SELECT *
+        FROM user
+        WHERE username = #{username}
+    </select>
 
 </mapper>

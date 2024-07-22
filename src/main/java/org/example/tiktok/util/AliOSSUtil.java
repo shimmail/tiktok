@@ -67,7 +67,8 @@ public class AliOSSUtil {
         //上传文件到 OSS
         OSS ossClient = new OSSClientBuilder().build(endpoint, accessKeyId, accessKeySecret);
         ossClient.putObject(bucketName, fileName, inputStream);
-        ossClient.shutdown();*/
+        ossClient.shutdown();
+*/
 
         //文件访问路径
         String url = endpoint.split("//")[0] + "//" + bucketName + "." + endpoint.split("//")[1] + "/" + fileName;
