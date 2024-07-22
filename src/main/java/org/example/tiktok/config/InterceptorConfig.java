@@ -1,4 +1,4 @@
-package org.example.tiktok.config;
+/*package org.example.tiktok.config;
 
 import org.example.tiktok.interceptor.JWTInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,4 +16,4 @@ public class InterceptorConfig implements WebMvcConfigurer {
                 .addPathPatterns("/**")
                 .excludePathPatterns("/user/login", "/user/register");
     }
-}
+}*/

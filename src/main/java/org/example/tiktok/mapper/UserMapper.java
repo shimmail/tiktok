@@ -10,7 +10,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 @Mapper
 public interface UserMapper extends BaseMapper<User> {
-
-
     void updateAvatarUrlByID(@Param("id") String id, @Param("avatarUrl") String avatarUrl);
 }

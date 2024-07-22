@@ -10,20 +10,31 @@ import org.example.tiktok.exception.PasswordErrorException;
 import org.example.tiktok.exception.UserNotFoundException;
 import org.example.tiktok.mapper.UserMapper;
 import org.example.tiktok.pojo.dto.UserDTO;
+import org.example.tiktok.pojo.entity.LoginUser;
 import org.example.tiktok.pojo.entity.User;
 import org.example.tiktok.pojo.vo.UserVO;
 import org.example.tiktok.result.Result;
 import org.example.tiktok.service.UserService;
 import org.example.tiktok.util.AliOSSUtil;
+import org.example.tiktok.util.JWTUtils;
 import org.example.tiktok.util.PasswordUtil;
+import org.example.tiktok.util.RedisCache;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Objects;
+
+import static net.sf.jsqlparser.util.validation.metadata.NamedObject.user;
+
 @Slf4j
 @Service
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
@@ -32,6 +43,13 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     @Autowired
     private AliOSSUtil aliOSSUtils;
+
+    @Autowired
+    private AuthenticationManager authenticationManager;
+
+    @Autowired
+    private RedisCache redisCache;
+
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Result register(UserDTO userDTO) {
@@ -55,22 +73,22 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public UserVO login(UserDTO userDTO) {
-        User user = userMapper.selectOne(new QueryWrapper<User>().eq("username", userDTO.getUsername()));
-        if (user == null) {
-            throw new UserNotFoundException("用户不存在");
+    public Result login(UserDTO userDTO) {
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userDTO.getUsername(),userDTO.getPassword());
+        Authentication authenticate = authenticationManager.authenticate(authenticationToken);
+        if(Objects.isNull(authenticate)){
+            throw new RuntimeException("用户名或密码错误");
         }
-        String password = userDTO.getPassword();
-        String password1 = user.getPassword();
-        UserVO userVO = new UserVO(user.getId(),user.getUsername(),user.getAvatarUrl(),user.getCreatedAt(),user.getUpdatedAt(),user.getDeletedAt());
-        // 校验密码
-        if(PasswordUtil.matches(password,password1)){
-            log.info("登录成功");
-            return userVO;
-        }
-        else {
-            throw new PasswordErrorException("密码错误");
-        }
+        //使用userid生成token
+        LoginUser loginUser = (LoginUser) authenticate.getPrincipal();
+        String userId = loginUser.getUser().getId().toString();
+        String token = JWTUtils.getToken(userId);
+        User user = userMapper.selectById(userId);
+        //authenticate存入redis
+        redisCache.setCacheObject("login:"+userId,loginUser);
+        //把token响应给前端
+        log.info("登录成功，token{}",token);
+        return Result.success(user);
     }
 
     //根据id查询用户
@@ -109,4 +127,5 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
         return userVO;
     }
+
 }

@@ -1,8 +1,5 @@
+/*
 package org.example.tiktok.interceptor;
-import com.auth0.jwt.exceptions.AlgorithmMismatchException;
-import com.auth0.jwt.exceptions.JWTVerificationException;
-import com.auth0.jwt.exceptions.SignatureVerificationException;
-import com.auth0.jwt.exceptions.TokenExpiredException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
@@ -27,9 +24,11 @@ import static jdk.nashorn.internal.runtime.regexp.joni.Config.log;
 
 @Component
 @Slf4j
+*/
 /**
  * JWT验证拦截器
- */
+ *//*
+
 public class JWTInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
@@ -51,4 +50,4 @@ public class JWTInterceptor implements HandlerInterceptor {
         }
         return false;
         }
-    }
+    }*/

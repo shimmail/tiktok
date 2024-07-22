@@ -27,6 +27,8 @@ public class UserDTO {
      */
     private String password;
 
+    private String role;
+
     /**
      * 头像，图片链接，可以是本地也可以是云存储
      */
