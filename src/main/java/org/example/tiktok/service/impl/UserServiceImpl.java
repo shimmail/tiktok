@@ -1,6 +1,8 @@
 package org.example.tiktok.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.example.tiktok.exception.UserNotFoundException;
@@ -45,6 +47,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     @Autowired
     private RedisCache redisCache;
+
+    //分页
+    public IPage<User> getUsersByPage(int pageNum, int pageSize) {
+        Page<User> page = new Page<>(pageNum, pageSize);
+        return userMapper.selectPage(page, null); // `null` indicates no query conditions
+    }
 
     //注册
     @Override

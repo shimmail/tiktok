@@ -1,3 +1,4 @@
+
 package org.example.tiktok.filter;
 
 import io.jsonwebtoken.Claims;
@@ -34,6 +35,7 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+
         // 设置响应字符编码
         response.setCharacterEncoding("UTF-8");
         response.setContentType("application/json;charset=UTF-8");
@@ -75,6 +77,7 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
             response.getWriter().write(Result.error(e.getMessage()).toJson());
             return;
         }
+
 
         // 放行
         filterChain.doFilter(request, response);

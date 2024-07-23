@@ -1,3 +1,4 @@
+
 package org.example.tiktok.config;
 
 import org.example.tiktok.filter.JwtAuthenticationTokenFilter;
@@ -53,6 +54,5 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public AuthenticationManager authenticationManagerBean() throws Exception {
         return super.authenticationManagerBean();
     }
-
-
 }
+
