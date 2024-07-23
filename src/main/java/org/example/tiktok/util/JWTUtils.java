@@ -16,7 +16,7 @@ import java.util.Date;
 @Component
 public class JWTUtils {
 
-    private static final long EXPIRE_TIME= 5*60*1000;//5分钟有效
+    private static final long EXPIRE_TIME= 120*60*1000;//120分钟有效
     private static final String TOKEN_SECRET="token123";  //密钥盐
 
     /**

@@ -7,6 +7,7 @@
     <version>0.0.1-SNAPSHOT</version>
     <name>tiktok</name>
     <description>tiktok</description>
+
     <properties>
         <java.version>1.8</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -156,6 +157,7 @@
                     <source>1.8</source>
                     <target>1.8</target>
                     <encoding>UTF-8</encoding>
+
                 </configuration>
             </plugin>
             <plugin>
@@ -170,6 +172,7 @@
                 <configuration>
                     <mainClass>org.example.tiktok.TiktokApplication</mainClass>
                     <skip>true</skip>
+
                 </configuration>
                 <executions>
                     <execution>

@@ -5,7 +5,7 @@
 
     <update id="updateAvatarUrlByID">
         UPDATE user
-        SET avatar_url = #{avatarUrl}
+        SET avatar_url = #{avatarUrl},update_at = NOW()
         WHERE id = #{id}
     </update>
     <select id="selectByUsername" resultType="org.example.tiktok.pojo.vo.UserVO"
