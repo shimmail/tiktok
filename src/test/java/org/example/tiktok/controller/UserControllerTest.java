@@ -51,14 +51,15 @@ class UserControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
+    @Autowired
+    private UserService userService;
+
     @Mock
     private UserMapper userMapper;
 
     @InjectMocks
     private UserServiceImpl userServiceImpl;
 
-    @MockBean
-    private UserService userService;
 
     @MockBean
     private JWTUtils jwtUtils;
@@ -87,5 +88,13 @@ class UserControllerTest {
         page.setSize(2);
         IPage<User> userIPage = userMapper.selectPage(page,null);
         System.out.println(userIPage.getRecords().toString());
+    }
+
+    @Test
+    public void login(){
+        UserDTO userDTO = new UserDTO();
+        userDTO.setUsername("aaa");
+        userDTO.setPassword("1234");
+        userService.login(userDTO);
     }
 }

@@ -21,4 +21,6 @@ public interface SocialMapper extends BaseMapper<Social> {
     //用户的粉丝列表
     @Select("SELECT * FROM social WHERE followee_id = #{userId}")
     List<Social> selectFollowersByUserId(String userId);
+
+
 }

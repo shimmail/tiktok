@@ -24,4 +24,5 @@ public class UserMapperTests {
         System.out.println(JWTUtils.getId(token));
     }
 
+
 }

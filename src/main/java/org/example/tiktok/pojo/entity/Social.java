@@ -17,5 +17,6 @@ public class Social {
      * 关注的id
      */
     private String followeeId;
+
     private java.util.Date createdAt;
 }

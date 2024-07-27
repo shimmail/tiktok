@@ -68,6 +68,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         User newUser = new User();
         BeanUtils.copyProperties(userDTO, newUser);
         newUser.setPassword(PasswordUtil.encode(userDTO.getPassword())); // 加密密码
+        newUser.setRole("user");// 默认身份为用户
         newUser.setCreatedAt(LocalDateTime.now());
         newUser.setUpdatedAt(LocalDateTime.now());
 

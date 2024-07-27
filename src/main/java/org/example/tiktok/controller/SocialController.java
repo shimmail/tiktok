@@ -48,10 +48,51 @@ public class SocialController {
     public Result ListFollowee(@RequestParam(name = "user_id", required = true) String userId,
                                @RequestParam(name = "page_num", defaultValue = "0") Integer pageNum,
                                @RequestParam(name = "page_size", defaultValue = "10") Integer pageSize) {
-        Page<User> page = new Page<>();
-        page.setCurrent(pageNum);
-        page.setSize(pageSize);
+        try {
+            pageNum++;
+            Page<User> page = new Page<>();
+            page.setCurrent(pageNum);
+            page.setSize(pageSize);
 
-        return socialService.ListFollowee(userId,page);
+            return socialService.ListFollowee(userId, page);
+        } catch (Exception e) {
+            return Result.error(e.getMessage());
+        }
     }
+
+    //根据 user_id 查看指定人的粉丝列表
+    @GetMapping("/follower/list")
+    public Result ListFollower(@RequestParam(name = "user_id", required = true) String userId,
+                               @RequestParam(name = "page_num", defaultValue = "0") Integer pageNum,
+                               @RequestParam(name = "page_size", defaultValue = "10") Integer pageSize) {
+        try {
+            pageNum++;
+            Page<User> page = new Page<>();
+            page.setCurrent(pageNum);
+            page.setSize(pageSize);
+
+            return socialService.ListFollower(userId, page);
+        } catch (Exception e) {
+            return Result.error(e.getMessage());
+        }
+    }
+
+    @GetMapping("/friends/list")
+    public Result ListFriends(
+            @RequestParam(name = "page_num", defaultValue = "0") Integer pageNum,
+            @RequestParam(name = "page_size", defaultValue = "10") Integer pageSize,
+            @RequestHeader("Access-Token") String accessToken) {
+        try {
+            pageNum++;
+            Page<User> page = new Page<>();
+            page.setCurrent(pageNum);
+            page.setSize(pageSize);
+            String userId = JWTUtils.getId(accessToken);
+            return socialService.ListFriends(userId, page);
+        } catch (Exception e) {
+            return Result.error(e.getMessage());
+        }
+    }
+
+
 }
