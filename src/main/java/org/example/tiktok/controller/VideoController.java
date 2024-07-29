@@ -10,6 +10,7 @@ import org.example.tiktok.pojo.entity.Video;
 import org.example.tiktok.result.Result;
 import org.example.tiktok.service.VideoService;
 import org.example.tiktok.util.AliOSSUtil;
+import org.example.tiktok.util.FileUploadUtils;
 import org.example.tiktok.util.JWTUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -27,6 +28,8 @@ public class VideoController {
     private VideoService videoService;
     @Autowired
     private AliOSSUtil aliOSSUtil;
+    @Autowired
+    private FileUploadUtils fileUploadUtils;
 
     //视频上传
     @PostMapping("/publish")
@@ -35,11 +38,17 @@ public class VideoController {
                           @RequestParam("description") String description,
                           @RequestHeader("Access-Token") String accessToken) throws IOException {
         try {
+            String coverUrl = "";
             String userId = JWTUtils.getId(accessToken);
+
             //上传视频，得到url
-            String video = aliOSSUtil.uploadVideo(videoUrl);
-            //得到视频封面
-            String coverUrl = aliOSSUtil.getVideoCoverlUrl(video);
+            // 本地存储
+            String video = fileUploadUtils.uploadFile(videoUrl);
+
+            // 阿里云存储
+/*          String video = aliOSSUtil.uploadVideo(videoUrl);
+            coverUrl = aliOSSUtil.getVideoCoverlUrl(video);*/
+
             VideoDTO videoDTO = new VideoDTO(userId , 0,description,0,title,video,coverUrl,0, LocalDateTime.now(),LocalDateTime.now());
             log.info("视频上传：{}", videoDTO);
             return videoService.publish(videoDTO);
@@ -56,6 +65,7 @@ public class VideoController {
         Page<Video> page = new Page<>();
         page.setCurrent(pageNum);
         page.setSize(pageSize);
+        log.info("分页：{}",page);
         return videoService.ListPopular(page);
 
     }

@@ -28,7 +28,7 @@ import java.util.Objects;
 public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
     // 定义不需要进行Token校验的接口路径
     private static final List<String> EXCLUDED_PATHS =
-            Arrays.asList("/user/login", "/user/register");
+            Arrays.asList("/user/login", "/user/register","/video/popular");
 
     @Autowired
     private RedisCache redisCache;

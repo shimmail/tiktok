@@ -1,5 +1,7 @@
 package org.example.tiktok.util;
 
+import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
@@ -8,6 +10,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.UUID;
 
+@Component
 public class FileUploadUtils {
 
     private static final String UPLOAD_DIR = "D:\\code\\java\\2\\files"; // 指定文件上传的目录
@@ -19,7 +22,7 @@ public class FileUploadUtils {
      * @return 保存后的文件路径
      * @throws IOException 如果保存文件时发生IO异常
      */
-    public static String saveFile(MultipartFile file) throws IOException {
+    public String uploadFile(MultipartFile file) throws IOException {
         if (file.isEmpty()) {
             throw new IOException("文件为空");
         }
