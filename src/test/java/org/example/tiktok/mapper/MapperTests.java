@@ -6,6 +6,7 @@ import org.example.tiktok.pojo.entity.User;
 import org.example.tiktok.pojo.entity.Video;
 import org.example.tiktok.util.JWTUtils;
 import org.junit.jupiter.api.Test;
+import org.junit.runner.notification.RunListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -43,6 +44,14 @@ public class MapperTests {
 
         for (Video video : videos) {
             System.out.println(video);
+        }
+    }
+
+    @Test
+    public void testSelectByUsernameLike(){
+        List<User> users = userMapper.selectByUsernameLike("a");
+        for (User user : users){
+            System.out.println(user);
         }
     }
 }

@@ -1,11 +1,15 @@
 package org.example.tiktok.service.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
+import org.example.tiktok.mapper.UserMapper;
 import org.example.tiktok.mapper.VideoMapper;
 import org.example.tiktok.pojo.dto.VideoDTO;
+import org.example.tiktok.pojo.dto.VideoSearch;
+import org.example.tiktok.pojo.entity.User;
 import org.example.tiktok.pojo.entity.Video;
 import org.example.tiktok.pojo.vo.PageVO;
 import org.example.tiktok.result.Result;
@@ -19,6 +23,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -27,7 +32,8 @@ public class VideoServiceImpl implements VideoService {
     private RedisTemplate<String, String> redisTemplate;
     @Autowired
     VideoMapper videoMapper;
-
+    @Autowired
+    UserMapper userMapper;
 
 
     public static final String SCORE_RANK = "score_rank";
@@ -60,7 +66,7 @@ public class VideoServiceImpl implements VideoService {
             List<Video> allVideos = JSON.parseArray(cachedData, Video.class);
 
             // 计算分页起始和结束索引
-            int fromIndex = (int) ((page.getCurrent()-1) * page.getSize());
+            int fromIndex = (int) ((page.getCurrent() - 1) * page.getSize());
             int toIndex = (int) Math.min(fromIndex + page.getSize(), allVideos.size());
 
             // 获取当前页的数据
@@ -92,6 +98,41 @@ public class VideoServiceImpl implements VideoService {
             return Result.success(videoPageVO);
         }
     }
+
+    @Override
+    public Result<PageVO<Video>> search(VideoSearch videoSearch, Page<Video> page) {
+        QueryWrapper<Video> queryWrapper = new QueryWrapper<>();
+        if (videoSearch.getKeywords() != null && !videoSearch.getKeywords().isEmpty()) {
+            queryWrapper.like("title", videoSearch.getKeywords())
+                    .or()
+                    .like("description", videoSearch.getKeywords());
+        }
+
+        if (videoSearch.getUsername() != null && !videoSearch.getUsername().isEmpty()) {
+            // 根据用户名模糊匹配用户ID
+            List<User> users = userMapper.selectByUsernameLike(videoSearch.getUsername());
+            List<String> userIds = users.stream().map(User::getId).collect(Collectors.toList());
+            for (String id : userIds){
+                queryWrapper.in("user_id", userIds);
+            }
+        }
+
+        if (videoSearch.getFromDate() != null) {
+            queryWrapper.ge("created_at", videoSearch.getFromDate());
+        }
+
+        if (videoSearch.getToDate() != null) {
+            queryWrapper.le("created_at", videoSearch.getToDate());
+        }
+
+        Page<Video> videoPage = videoMapper.selectPage(page, queryWrapper);
+        PageVO<Video> videoPageVO = new PageVO<>();
+        videoPageVO.setItems(videoPage.getRecords());
+        videoPageVO.setTotal(videoPage.getTotal());
+
+        return Result.success(videoPageVO);
+    }
+
     //更新排行榜缓存
     public void updateCacheForPopularVideos() {
         ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();

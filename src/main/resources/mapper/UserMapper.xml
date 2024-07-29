@@ -14,5 +14,10 @@
         FROM user
         WHERE username = #{username}
     </select>
+    <select id="selectByUsernameLike" resultType="org.example.tiktok.pojo.entity.User">
+        SELECT *
+        FROM user
+        WHERE username LIKE CONCAT('%', #{username}, '%')
+    </select>
 
 </mapper>

@@ -1,12 +1,15 @@
 package org.example.tiktok.controller;
 
 import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
 import org.example.tiktok.mapper.VideoMapper;
 import org.example.tiktok.pojo.dto.VideoDTO;
+import org.example.tiktok.pojo.dto.VideoSearch;
 import org.example.tiktok.pojo.entity.User;
 import org.example.tiktok.pojo.entity.Video;
+import org.example.tiktok.pojo.vo.PageVO;
 import org.example.tiktok.result.Result;
 import org.example.tiktok.service.VideoService;
 import org.example.tiktok.util.AliOSSUtil;
@@ -59,7 +62,7 @@ public class VideoController {
 
     //视频点击量排行榜
     @GetMapping("/popular")
-    public Result popular(@RequestParam(name = "page_num", defaultValue = "0") Integer pageNum,
+    public Result<PageVO<Video>> popular(@RequestParam(name = "page_num", defaultValue = "0") Integer pageNum,
                           @RequestParam(name = "page_size", defaultValue = "10") Integer pageSize){
         pageNum++;
         Page<Video> page = new Page<>();
@@ -67,6 +70,19 @@ public class VideoController {
         page.setSize(pageSize);
         log.info("分页：{}",page);
         return videoService.ListPopular(page);
+    }
 
+    //视频搜索
+    @PostMapping("/search")
+    public Result<PageVO<Video>> search(@RequestParam(name = "page_num", defaultValue = "0") Integer pageNum,
+                                        @RequestParam(name = "page_size", defaultValue = "10") Integer pageSize,
+                                        @RequestParam(name = "keywords" ,required = false) String keywords,
+                                        @RequestParam(name = "username",required = false) String username,
+                                        @RequestParam(name = "from_date",required = false) Integer fromDate,
+                                        @RequestParam(name = "to_date",required = false) Integer toDate){
+        pageNum++;
+        Page<Video> page = new Page<>(pageNum, pageSize);
+        VideoSearch videoSearch = new VideoSearch(keywords,username,fromDate,toDate);
+        return videoService.search(videoSearch,page);
     }
 }

@@ -9,6 +9,8 @@ import org.example.tiktok.pojo.vo.UserVO;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 @Mapper
 @Component
@@ -16,4 +18,6 @@ public interface UserMapper extends BaseMapper<User> {
     void updateAvatarUrlByID(@Param("id") String id, @Param("avatarUrl") String avatarUrl);
 
     UserVO selectByUsername(String username);
+
+    List<User> selectByUsernameLike(String username);
 }
