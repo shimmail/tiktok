@@ -1,4 +1,5 @@
 package org.example.tiktok.util;
+
 import com.aliyun.oss.OSS;
 import com.aliyun.oss.OSSClientBuilder;
 import org.apache.tomcat.util.http.fileupload.FileUploadException;
@@ -37,26 +38,23 @@ public class AliOSSUtil {
         this.bucketName = ossConfig.getBucketName();
     }
 
-    public String uploadAvatar (MultipartFile file) throws IOException {
+    // 文件上传
+    public String uploadAvatar(MultipartFile file) throws IOException {
 
         // 允许的文件类型
         String[] allowedTypes = {"image/jpeg", "image/png", "application/pdf"};
 
         // 最大文件大小
         long maxSize = 5 * 1024 * 1024; // 5MB
-
         // 校验文件类型
         String contentType = file.getContentType();
         if (!Arrays.asList(allowedTypes).contains(contentType)) {
             throw new FileUploadException("不支持的图片类型！");
         }
-
         // 校验文件大小
         if (file.getSize() > maxSize) {
             throw new FileUploadException("图片太大，不能超过5MB！");
         }
-
-
         //获取上传的文件的输入流
         InputStream inputStream = file.getInputStream();
 
@@ -72,23 +70,57 @@ public class AliOSSUtil {
 
         //文件访问路径
         String url = endpoint.split("//")[0] + "//" + bucketName + "." + endpoint.split("//")[1] + "/" + fileName;
+        return url;
+    }
 
+    // 视频上传
+    public String uploadVideo(MultipartFile file) throws IOException {
+
+        // 允许的视频文件类型
+        String[] allowedTypes = {"video/mp4", "video/avi", "video/x-matroska"}; // 添加你需要的视频MIME类型
+
+        // 最大文件大小
+        long maxSize = 100 * 1024 * 1024; // 例如100MB
+
+        // 校验文件类型
+        String contentType = file.getContentType();
+        if (!Arrays.asList(allowedTypes).contains(contentType)) {
+            throw new FileUploadException("不支持的视频类型！");
+        }
+
+        // 校验文件大小
+        if (file.getSize() > maxSize) {
+            throw new FileUploadException("视频文件太大，不能超过100MB！");
+        }
+
+        // 获取上传的视频文件的输入流
+        InputStream inputStream = file.getInputStream();
+
+        // 创建文件的UUID
+        String originalFilename = file.getOriginalFilename();
+        String fileName = UUID.randomUUID().toString() + originalFilename.substring(originalFilename.lastIndexOf("."));
+
+    /*
+        OSS ossClient = new OSSClientBuilder().build(endpoint, accessKeyId, accessKeySecret);
+        ossClient.putObject(bucketName, fileName, inputStream);
+        ossClient.shutdown();
+    */
+        String url = endpoint.split("//")[0] + "//" + bucketName + "." + endpoint.split("//")[1] + "/" + fileName;
 
         return url;
     }
 
-
     //根据OSS图片url得到缩略图url
-    public static String getThumbnailUrl(String imgUrl){
+    public String getThumbnailUrl(String imgUrl) {
         imgUrl = imgUrl + "?x-oss-process=image/resize,m_fill,w_400,quality,q_60";
-        System.out.println(">>>>>>>>>>>>>>>>> 缩略图url:"+imgUrl);
+        System.out.println(">>>>>>>>>>>>>>>>> 缩略图url:" + imgUrl);
         return imgUrl;
     }
 
     //根据OSS视频url得到视频封面图url
-    public static String getVideoCoverlUrl(String videoUrl){
+    public String getVideoCoverlUrl(String videoUrl) {
         videoUrl = videoUrl + "?x-oss-process=video/snapshot,t_7000,f_jpg,w_800,h_600,m_fast";
-        System.out.println(">>>>>>>>>>>>>>>>> 视频封面图url:"+videoUrl);
+        System.out.println(">>>>>>>>>>>>>>>>> 视频封面图url:" + videoUrl);
         return videoUrl;
     }
 }

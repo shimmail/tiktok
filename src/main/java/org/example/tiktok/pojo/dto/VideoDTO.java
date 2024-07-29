@@ -1,5 +1,8 @@
 package org.example.tiktok.pojo.dto;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
+
 import java.time.LocalDateTime;
 
 /**
@@ -21,10 +24,7 @@ public class VideoDTO {
      * 评论数，评论数量
      */
     private long commentCount;
-    /**
-     * 封面，封面链接
-     */
-    private String coverUrl;
+
     /**
      * 视频描述，视频描述
      */
@@ -43,6 +43,12 @@ public class VideoDTO {
      * 视频，视频文件链接
      */
     private String videoUrl;
+
+    /**
+     * 封面，封面链接
+     */
+    private String coverUrl;
+
     /**
      * 访问量，视频访问量
      */
@@ -60,4 +66,17 @@ public class VideoDTO {
      * 删除时间
      */
     private LocalDateTime deletedAt;
+
+    public VideoDTO(String userId, long commentCount, String description, long likeCount, String title, String videoUrl, String coverUrl, long visitCount, LocalDateTime createdAt, LocalDateTime updatedAt) {
+        this.userId = userId;
+        this.commentCount = commentCount;
+        this.description = description;
+        this.likeCount = likeCount;
+        this.title = title;
+        this.videoUrl = videoUrl;
+        this.coverUrl = coverUrl;
+        this.visitCount = visitCount;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+    }
 }

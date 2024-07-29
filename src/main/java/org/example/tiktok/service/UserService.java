@@ -13,7 +13,7 @@ import java.util.Optional;
 public interface UserService {
 
 
-    Result register(UserDTO userDTO);
+    Result register(UserDTO userDTO) throws Exception;
 
     Result login(UserDTO userDTO);
 

@@ -49,6 +49,7 @@ public class UserController {
         UserDTO userDTO = new UserDTO();
         userDTO.setUsername(username);
         userDTO.setPassword(password);
+        log.info("用户登录：{}", userDTO);
         try {
             return userService.login(userDTO);
         } catch (Exception e) {

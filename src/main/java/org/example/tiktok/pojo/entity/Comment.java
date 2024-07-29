@@ -1,5 +1,7 @@
 package org.example.tiktok.pojo.entity;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -25,6 +27,7 @@ public class Comment {
     /**
      * 评论 ID，唯一标识符，可选自增/雪花/UUID/其他
      */
+    @TableId(value = "id", type = IdType.ASSIGN_ID)
     private String id;
     /**
      * 点赞数，评论点赞的数量

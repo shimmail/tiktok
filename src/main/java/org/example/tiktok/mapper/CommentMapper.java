@@ -2,12 +2,11 @@ package org.example.tiktok.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
-import org.example.tiktok.pojo.entity.Video;
-import org.springframework.stereotype.Component;
+import org.example.tiktok.pojo.entity.Comment;
 import org.springframework.stereotype.Repository;
 
 @Repository
 @Mapper
-@Component
-public interface VideoMapper extends BaseMapper<Video> {
+public interface CommentMapper extends BaseMapper<Comment> {
+
 }

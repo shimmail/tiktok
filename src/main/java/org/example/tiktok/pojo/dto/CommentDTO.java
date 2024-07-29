@@ -1,5 +1,8 @@
 package org.example.tiktok.pojo.dto;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
+
 import java.time.LocalDateTime;
 
 /**
@@ -7,28 +10,28 @@ import java.time.LocalDateTime;
  */
 @lombok.Data
 public class CommentDTO {
-    /**
-     * 子评论数，子评论的数量
-     */
-    private long childCount;
-    /**
-     * 评论文本，建议进行一定的文本处理
-     */
-    private String content;
 
     /**
      * 评论 ID，唯一标识符，可选自增/雪花/UUID/其他
      */
+    @TableId(value = "id", type = IdType.ASSIGN_ID)
     private String id;
     /**
      * 点赞数，评论点赞的数量
      */
     private long likeCount;
     /**
+     * 子评论数，子评论的数量
+     */
+    private long childCount;
+    /**
      * 父评论 ID，父评论的唯一标识符
      */
     private String parentId;
-
+    /**
+     * 评论文本，建议进行一定的文本处理
+     */
+    private String content;
     /**
      * 发表者 ID，发表评论的用户唯一标识符
      */

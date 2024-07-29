@@ -57,24 +57,26 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     //注册
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Result register(UserDTO userDTO) {
-        // 检查用户名是否已存在
-        User existingUser = userMapper.selectOne(new QueryWrapper<User>().eq("username", userDTO.getUsername()));
-        if (existingUser != null) {
-            return Result.error("用户名已存在");
+    public Result register(UserDTO userDTO) throws Exception {
+        try {
+            // 检查用户名是否已存在
+            User existingUser = userMapper.selectOne(new QueryWrapper<User>().eq("username", userDTO.getUsername()));
+            if (existingUser != null) {
+                throw new Exception("用户名已存在");
+            }
+
+            // 创建新用户并保存到数据库
+            User newUser = new User();
+            BeanUtils.copyProperties(userDTO, newUser);
+            newUser.setPassword(PasswordUtil.encode(userDTO.getPassword())); // 加密密码
+            newUser.setRole("user");// 默认身份为用户
+            newUser.setCreatedAt(LocalDateTime.now());
+            newUser.setUpdatedAt(LocalDateTime.now());
+            userMapper.insert(newUser);
+            return success();
+        } catch (Exception e) {
+            return Result.error(e.getMessage());
         }
-
-        // 创建新用户并保存到数据库
-        User newUser = new User();
-        BeanUtils.copyProperties(userDTO, newUser);
-        newUser.setPassword(PasswordUtil.encode(userDTO.getPassword())); // 加密密码
-        newUser.setRole("user");// 默认身份为用户
-        newUser.setCreatedAt(LocalDateTime.now());
-        newUser.setUpdatedAt(LocalDateTime.now());
-
-        userMapper.insert(newUser);
-
-        return success();
     }
 
     //登录
@@ -116,7 +118,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         if (user == null) {
             throw new UserNotFoundException("用户不存在");
         }
-        return new UserVO(user.getId(), user.getUsername(), user.getAvatarUrl(), user.getCreatedAt(), user.getUpdatedAt(), user.getDeletedAt());
+        UserVO userVO = new UserVO();
+        BeanUtils.copyProperties(user,userVO);
+        return userVO;
     }
 
 

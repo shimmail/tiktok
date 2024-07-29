@@ -39,8 +39,6 @@ public class SocialController {
         } else {
             return Result.error("请求无效");
         }
-
-
     }
 
     //根据 user_id 查看指定人的关注列表
@@ -77,6 +75,7 @@ public class SocialController {
         }
     }
 
+    //获得当前用户的朋友列表
     @GetMapping("/friends/list")
     public Result ListFriends(
             @RequestParam(name = "page_num", defaultValue = "0") Integer pageNum,
