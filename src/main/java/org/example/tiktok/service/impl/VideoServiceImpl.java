@@ -100,7 +100,7 @@ public class VideoServiceImpl implements VideoService {
     }
 
     @Override
-    public Result<PageVO<Video>> search(VideoSearch videoSearch, Page<Video> page) {
+    public Result<PageVO<Video>> searchVideo(VideoSearch videoSearch, Page<Video> page) {
         QueryWrapper<Video> queryWrapper = new QueryWrapper<>();
         if (videoSearch.getKeywords() != null && !videoSearch.getKeywords().isEmpty()) {
             queryWrapper.like("title", videoSearch.getKeywords())
@@ -132,6 +132,8 @@ public class VideoServiceImpl implements VideoService {
 
         return Result.success(videoPageVO);
     }
+
+
 
     //更新排行榜缓存
     public void updateCacheForPopularVideos() {

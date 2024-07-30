@@ -15,6 +15,7 @@ import org.example.tiktok.service.VideoService;
 import org.example.tiktok.util.AliOSSUtil;
 import org.example.tiktok.util.FileUploadUtils;
 import org.example.tiktok.util.JWTUtils;
+import org.example.tiktok.util.SearchHistoryUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -33,6 +34,8 @@ public class VideoController {
     private AliOSSUtil aliOSSUtil;
     @Autowired
     private FileUploadUtils fileUploadUtils;
+    @Autowired
+    private SearchHistoryUtil searchHistoryUtil;
 
     //视频上传
     @PostMapping("/publish")
@@ -79,10 +82,23 @@ public class VideoController {
                                         @RequestParam(name = "keywords" ,required = false) String keywords,
                                         @RequestParam(name = "username",required = false) String username,
                                         @RequestParam(name = "from_date",required = false) Integer fromDate,
-                                        @RequestParam(name = "to_date",required = false) Integer toDate){
-        pageNum++;
-        Page<Video> page = new Page<>(pageNum, pageSize);
-        VideoSearch videoSearch = new VideoSearch(keywords,username,fromDate,toDate);
-        return videoService.search(videoSearch,page);
+                                        @RequestParam(name = "to_date",required = false) Integer toDate,
+                                        @RequestHeader("Access-Token") String accessToken){
+        try {
+            pageNum++;
+            Page<Video> page = new Page<>(pageNum, pageSize);
+            VideoSearch videoSearch = new VideoSearch(keywords,username,fromDate,toDate);
+
+            // 将搜索记录存入redis
+            String userId = "0";
+            if (!accessToken.isEmpty()) {
+                userId = JWTUtils.getId(accessToken);
+            }
+            searchHistoryUtil.saveSearchHistory(userId,videoSearch);
+            return videoService.searchVideo(videoSearch,page);
+
+        } catch (Exception e) {
+            return Result.error(e.getMessage());
+        }
     }
 }

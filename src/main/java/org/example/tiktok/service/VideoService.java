@@ -12,5 +12,5 @@ public interface VideoService {
 
     Result ListPopular(Page<Video> page);
 
-    Result<PageVO<Video>> search(VideoSearch videoSearch, Page<Video> page);
+    Result<PageVO<Video>> searchVideo(VideoSearch videoSearch, Page<Video> page);
 }
