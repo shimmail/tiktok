@@ -125,6 +125,14 @@ public class VideoServiceImpl implements VideoService {
             queryWrapper.le("created_at", videoSearch.getToDate());
         }
 
+        int sortBy = videoSearch.getSortBy();
+        if(sortBy == 1){
+            queryWrapper.orderByDesc("created_at"); // 按创建时间降序
+        }
+        else {
+            queryWrapper.orderByDesc("visit_count"); // 按点击量降序
+        }
+
         Page<Video> videoPage = videoMapper.selectPage(page, queryWrapper);
         PageVO<Video> videoPageVO = new PageVO<>();
         videoPageVO.setItems(videoPage.getRecords());

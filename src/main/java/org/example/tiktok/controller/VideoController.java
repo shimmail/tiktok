@@ -83,14 +83,15 @@ public class VideoController {
                                         @RequestParam(name = "username",required = false) String username,
                                         @RequestParam(name = "from_date",required = false) Integer fromDate,
                                         @RequestParam(name = "to_date",required = false) Integer toDate,
+                                        @RequestParam(name = "sort_by",defaultValue = "0") Integer sortBy,
                                         @RequestHeader("Access-Token") String accessToken){
         try {
             pageNum++;
             Page<Video> page = new Page<>(pageNum, pageSize);
-            VideoSearch videoSearch = new VideoSearch(keywords,username,fromDate,toDate);
+            VideoSearch videoSearch = new VideoSearch(keywords,username,fromDate,toDate,sortBy);
 
             // 将搜索记录存入redis
-            String userId = "0";
+            String userId = "0";// 默认游客搜索
             if (!accessToken.isEmpty()) {
                 userId = JWTUtils.getId(accessToken);
             }
