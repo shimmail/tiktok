@@ -14,7 +14,6 @@ public class CommentDTO {
     /**
      * 评论 ID，唯一标识符，可选自增/雪花/UUID/其他
      */
-    @TableId(value = "id", type = IdType.ASSIGN_ID)
     private String id;
     /**
      * 点赞数，评论点赞的数量
@@ -53,4 +52,15 @@ public class CommentDTO {
      * 删除时间
      */
     private LocalDateTime deletedAt;
+
+    public CommentDTO(String parentId, String content, String userId, String videoId) {
+        this.likeCount = 0;
+        this.childCount = 0;
+        this.parentId = parentId;
+        this.content = content;
+        this.userId = userId;
+        this.videoId = videoId;
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+    }
 }

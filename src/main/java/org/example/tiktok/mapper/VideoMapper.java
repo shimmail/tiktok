@@ -8,7 +8,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 @Mapper
-@Component
 public interface VideoMapper extends BaseMapper<Video> {
 
 }

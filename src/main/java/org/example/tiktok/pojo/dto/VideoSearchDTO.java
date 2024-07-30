@@ -3,14 +3,14 @@ package org.example.tiktok.pojo.dto;
 import lombok.Data;
 
 @Data
-public class VideoSearch {
+public class VideoSearchDTO {
     private String keywords;
     private String username;
     private Integer fromDate;
     private Integer toDate;
     private Integer sortBy;
 
-    public VideoSearch(String keywords, String username, Integer fromDate, Integer toDate, Integer sortBy) {
+    public VideoSearchDTO(String keywords, String username, Integer fromDate, Integer toDate, Integer sortBy) {
         this.keywords = keywords;
         this.username = username;
         this.fromDate = fromDate;

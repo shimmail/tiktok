@@ -1,14 +1,14 @@
 package org.example.tiktok.service.impl;
 
 import com.alibaba.fastjson.JSON;
-import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
 import org.example.tiktok.mapper.UserMapper;
 import org.example.tiktok.mapper.VideoMapper;
 import org.example.tiktok.pojo.dto.VideoDTO;
-import org.example.tiktok.pojo.dto.VideoSearch;
+import org.example.tiktok.pojo.dto.VideoSearchDTO;
 import org.example.tiktok.pojo.entity.User;
 import org.example.tiktok.pojo.entity.Video;
 import org.example.tiktok.pojo.vo.PageVO;
@@ -17,7 +17,6 @@ import org.example.tiktok.service.VideoService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
 
@@ -41,7 +40,7 @@ public class VideoServiceImpl implements VideoService {
 
     // 视频上传
     @Override
-    public Result publish(VideoDTO videoDTO) {
+    public Result saveVideo(VideoDTO videoDTO) {
         Video video = new Video();
         BeanUtils.copyProperties(videoDTO, video);
         // 保存视频到数据库
@@ -92,40 +91,39 @@ public class VideoServiceImpl implements VideoService {
             // 缓存结果
             valueOperations.set(cacheKey, JSON.toJSONString(videos), 10, TimeUnit.MINUTES);
 
-            PageVO<Video> videoPageVO = new PageVO<>();
-            videoPageVO.setItems(videos);
-            videoPageVO.setTotal(totalVideos);
+            PageVO<Video> videoPageVO = new PageVO<>(videos , totalVideos);
             return Result.success(videoPageVO);
         }
     }
 
     @Override
-    public Result<PageVO<Video>> searchVideo(VideoSearch videoSearch, Page<Video> page) {
+    public Result<PageVO<Video>> searchVideo(VideoSearchDTO videoSearchDTO, Page<Video> page) {
         QueryWrapper<Video> queryWrapper = new QueryWrapper<>();
-        if (videoSearch.getKeywords() != null && !videoSearch.getKeywords().isEmpty()) {
-            queryWrapper.like("title", videoSearch.getKeywords())
+        if (videoSearchDTO.getKeywords() != null && !videoSearchDTO.getKeywords().isEmpty()) {
+            //查询条件
+            queryWrapper.like("title", videoSearchDTO.getKeywords())
                     .or()
-                    .like("description", videoSearch.getKeywords());
+                    .like("description", videoSearchDTO.getKeywords());
         }
 
-        if (videoSearch.getUsername() != null && !videoSearch.getUsername().isEmpty()) {
+        if (videoSearchDTO.getUsername() != null && !videoSearchDTO.getUsername().isEmpty()) {
             // 根据用户名模糊匹配用户ID
-            List<User> users = userMapper.selectByUsernameLike(videoSearch.getUsername());
+            List<User> users = userMapper.selectByUsernameLike(videoSearchDTO.getUsername());
             List<String> userIds = users.stream().map(User::getId).collect(Collectors.toList());
             for (String id : userIds){
                 queryWrapper.in("user_id", userIds);
             }
         }
 
-        if (videoSearch.getFromDate() != null) {
-            queryWrapper.ge("created_at", videoSearch.getFromDate());
+        if (videoSearchDTO.getFromDate() != null) {
+            queryWrapper.ge("created_at", videoSearchDTO.getFromDate());
         }
 
-        if (videoSearch.getToDate() != null) {
-            queryWrapper.le("created_at", videoSearch.getToDate());
+        if (videoSearchDTO.getToDate() != null) {
+            queryWrapper.le("created_at", videoSearchDTO.getToDate());
         }
 
-        int sortBy = videoSearch.getSortBy();
+        int sortBy = videoSearchDTO.getSortBy();
         if(sortBy == 1){
             queryWrapper.orderByDesc("created_at"); // 按创建时间降序
         }
@@ -134,13 +132,31 @@ public class VideoServiceImpl implements VideoService {
         }
 
         Page<Video> videoPage = videoMapper.selectPage(page, queryWrapper);
-        PageVO<Video> videoPageVO = new PageVO<>();
-        videoPageVO.setItems(videoPage.getRecords());
-        videoPageVO.setTotal(videoPage.getTotal());
+        PageVO<Video> videoPageVO = new PageVO<>(videoPage.getRecords() , videoPage.getTotal());
 
         return Result.success(videoPageVO);
     }
 
+    // 获得用户视频上传列表
+    @Override
+    public Result<PageVO<Video>> listVideoById(String id, Page<Video> page) {
+        try {
+            // 创建查询条件
+            QueryWrapper<Video> queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("user_id", id);  // 根据用户ID过滤
+
+            // 执行分页查询
+            IPage<Video> videoPage = videoMapper.selectPage(page, queryWrapper);
+
+            // 封装结果到 PageVO 对象
+            PageVO<Video> pageVO = new PageVO<>(videoPage.getRecords(),videoPage.getTotal());
+
+            // 返回结果
+            return Result.success(pageVO);
+        } catch (Exception e) {
+            return Result.error("查询视频列表失败: " + e.getMessage());
+        }
+    }
 
 
     //更新排行榜缓存
