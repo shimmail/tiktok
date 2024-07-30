@@ -22,12 +22,12 @@ public class InteractionController {
 
     @PostMapping("/comment/publish")
     public Result saveComment(@RequestParam(name = "video_id", required = false) String videoId,
-                                 @RequestParam(name = "comment_id", required = false) String commentId,
-                                 @RequestParam(name = "content", required = true) String content,
-                                 @RequestHeader("Access-Token") String accessToken) throws Exception {
+                              @RequestParam(name = "comment_id", required = false) String commentId,
+                              @RequestParam(name = "content", required = true) String content,
+                              @RequestHeader("Access-Token") String accessToken) throws Exception {
         try {
             String userId = JWTUtils.getId(accessToken);
-            CommentDTO commentDTO = new CommentDTO(commentId,content,userId,videoId);
+            CommentDTO commentDTO = new CommentDTO(commentId, content, userId, videoId);
 
             log.info("评论：{}", commentDTO);
 
@@ -57,10 +57,10 @@ public class InteractionController {
 
             if (videoId != null && !videoId.isEmpty() && (commentId == null || commentId.isEmpty())) {
                 // 视频评论
-                return interactionService.listVideoComment(videoId,page);
+                return interactionService.listVideoComment(videoId, page);
             } else if (videoId == null || videoId.isEmpty() && commentId != null && !commentId.isEmpty()) {
                 // 评论回复
-                return interactionService.listCommentReply(commentId,page);
+                return interactionService.listCommentReply(commentId, page);
             } else {
                 throw new Exception("参数错误");
             }
@@ -68,10 +68,11 @@ public class InteractionController {
             return Result.error(e.getMessage());
         }
     }
+
     @DeleteMapping("/comment/delete")
     public Result removeComment(@RequestParam(name = "video_id", required = false) String videoId,
-                              @RequestParam(name = "comment_id", required = false) String commentId,
-                              @RequestHeader("Access-Token") String accessToken){
+                                @RequestParam(name = "comment_id", required = false) String commentId,
+                                @RequestHeader("Access-Token") String accessToken) {
         try {
             if (videoId != null && !videoId.isEmpty() && (commentId == null || commentId.isEmpty())) {
                 // 视频评论
@@ -87,4 +88,46 @@ public class InteractionController {
         }
     }
 
+    /**
+     * 点赞或取消点赞
+     *
+     * @param videoId     视频ID，可选
+     * @param commentId   评论ID，可选
+     * @param actionType  操作类型，1为点赞，2为取消，默认1
+     * @param accessToken 用户访问令牌
+     * @return 操作结果
+     */
+    @PostMapping("/like/action")
+    public Result like(@RequestParam(name = "video_id", required = false) String videoId,
+                       @RequestParam(name = "comment_id", required = false) String commentId,
+                       @RequestParam(name = "action_type", defaultValue = "1") String actionType,//1点赞，2取消
+                       @RequestHeader("Access-Token") String accessToken) {
+        try {
+            if (videoId != null && !videoId.isEmpty() && (commentId == null || commentId.isEmpty())) {
+                if (actionType.equals("1")) {
+                    // 视频点赞
+                    return interactionService.likeVideo(videoId);
+                } else if (actionType.equals("2")) {
+                    // 取消点赞
+                    return interactionService.dislikeVideo(videoId);
+                } else {
+                    throw new Exception("参数错误");
+                }
+            } else if (videoId == null || videoId.isEmpty() && commentId != null && !commentId.isEmpty()) {
+                if (actionType.equals("1")) {
+                    // 评论点赞
+                    return interactionService.likeComment(commentId);
+                } else if (actionType.equals("2")) {
+                    //取消点赞
+                    return interactionService.dislikeComment(commentId);
+                } else {
+                    throw new Exception("参数错误");
+                }
+            } else {
+                throw new Exception("参数错误");
+            }
+        } catch (Exception e) {
+            return Result.error(e.getMessage());
+        }
+    }
 }

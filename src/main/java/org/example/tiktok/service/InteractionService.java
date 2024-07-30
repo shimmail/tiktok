@@ -19,4 +19,12 @@ public interface InteractionService {
     Result removeVideoComment(String videoId);
 
     Result removeCommentReply(String commentId);
+
+    Result likeVideo(String videoId) throws Exception;
+
+    Result dislikeVideo(String videoId) throws Exception;
+
+    Result likeComment(String commentId) throws Exception;
+
+    Result dislikeComment(String commentId) throws Exception;
 }

@@ -151,24 +151,81 @@ public class InteractionServiceImpl implements InteractionService {
         }
         return Result.error("评论删除失败");
     }
-        // 执行分页查询
-        private Result<PageVO<CommentVO>> getPageVOResult (Page page, QueryWrapper < Comment > queryWrapper){
-            // 执行分页查询
-            IPage<Comment> commentPage = commentMapper.selectPage(page, queryWrapper);
 
-            // 转换为 CommentVO 类型的列表
-            List<CommentVO> commentVOList = commentPage.getRecords().stream()
-                    .map(comment -> {
-                        CommentVO commentVO = new CommentVO();
-                        BeanUtils.copyProperties(comment, commentVO);
-                        // 设置其他必要的属性，例如用户信息等
-                        return commentVO;
-                    }).collect(Collectors.toList());
-
-            // 封装结果到 PageVO 对象
-            PageVO<CommentVO> pageVO = new PageVO<>(commentVOList, commentPage.getTotal());
-
-            // 返回结果
-            return Result.success(pageVO);
+    @Override
+    public Result likeVideo(String videoId) throws Exception {
+        Video video = videoMapper.selectById(videoId);
+        if (video != null) {
+            // 增加点赞数
+            video.setLikeCount(video.getLikeCount() + 1);
+            videoMapper.updateById(video);
+            return Result.success();
+        }
+        else {
+            throw new Exception("操作失败");
         }
     }
+
+    @Override
+    public Result dislikeVideo(String videoId) throws Exception {
+        Video video = videoMapper.selectById(videoId);
+        if (video != null && video.getLikeCount()>0) {
+            // 减少点赞数
+            video.setLikeCount(video.getLikeCount() - 1);
+            videoMapper.updateById(video);
+            return Result.success();
+        }
+        else {
+            throw new Exception("操作失败");
+        }
+    }
+
+    @Override
+    public Result likeComment(String commentId) throws Exception {
+        Comment comment = commentMapper.selectById(commentId);
+        if (comment != null) {
+            // 增加点赞数
+            comment.setLikeCount(comment.getLikeCount() + 1);
+            commentMapper.updateById(comment);
+            return Result.success();
+        }
+        else {
+            throw new Exception("操作失败");
+        }
+    }
+
+    @Override
+    public Result dislikeComment(String commentId) throws Exception {
+        Comment comment = commentMapper.selectById(commentId);
+        if (comment != null && comment.getLikeCount()>0) {
+            // 减少点赞数
+            comment.setLikeCount(comment.getLikeCount() - 1);
+            commentMapper.updateById(comment);
+            return Result.success();
+        }
+        else {
+            throw new Exception("操作失败");
+        }
+    }
+
+    // 执行分页查询
+    private Result<PageVO<CommentVO>> getPageVOResult(Page page, QueryWrapper<Comment> queryWrapper) {
+        // 执行分页查询
+        IPage<Comment> commentPage = commentMapper.selectPage(page, queryWrapper);
+
+        // 转换为 CommentVO 类型的列表
+        List<CommentVO> commentVOList = commentPage.getRecords().stream()
+                .map(comment -> {
+                    CommentVO commentVO = new CommentVO();
+                    BeanUtils.copyProperties(comment, commentVO);
+                    // 设置其他必要的属性，例如用户信息等
+                    return commentVO;
+                }).collect(Collectors.toList());
+
+        // 封装结果到 PageVO 对象
+        PageVO<CommentVO> pageVO = new PageVO<>(commentVOList, commentPage.getTotal());
+
+        // 返回结果
+        return Result.success(pageVO);
+    }
+}
