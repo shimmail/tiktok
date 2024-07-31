@@ -4,8 +4,8 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.tiktok.exception.UserNotFoundException;
 import org.example.tiktok.mapper.UserMapper;
 import org.example.tiktok.pojo.dto.UserDTO;
 import org.example.tiktok.pojo.entity.LoginUser;
@@ -17,6 +17,7 @@ import org.example.tiktok.util.AliOSSUtil;
 import org.example.tiktok.util.JWTUtils;
 import org.example.tiktok.util.PasswordUtil;
 import org.example.tiktok.util.RedisCache;
+import org.omg.CORBA.UserException;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -30,23 +31,18 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 import static org.example.tiktok.result.Result.success;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
-    @Autowired
-    private UserMapper userMapper;
-
-    @Autowired
-    private AliOSSUtil aliOSSUtils;
-
-    @Autowired
-    private AuthenticationManager authenticationManager;
-
-    @Autowired
-    private RedisCache redisCache;
+    private final UserMapper userMapper;
+    private final AliOSSUtil aliOSSUtils;
+    private final AuthenticationManager authenticationManager;
+    private final RedisCache redisCache;
 
     //分页
     public IPage<User> getUsersByPage(int pageNum, int pageSize) {
@@ -90,12 +86,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         UserVO uservo = userMapper.selectByUsername(userDTO.getUsername());
         //使用userid生成token
         String token = JWTUtils.getToken(uservo.getId());
-        LoginUser loginUser = (LoginUser) authenticate.getPrincipal();
-        String userId = loginUser.getUser().getId().toString();
+        /*LoginUser loginUser = (LoginUser) authenticate.getPrincipal();*/
+        String userId = uservo.getId();
         log.info("token:{}",token);
 
         //authenticate存入redis
-        redisCache.setCacheObject("login:"+userId,loginUser);
+        redisCache.setCacheObject("login:"+userId,uservo,1, TimeUnit.DAYS);//有效期一天
 
         return Result.success(uservo);
     }
@@ -113,10 +109,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     //根据id查询用户
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public UserVO getUserById(String id) {
+    public UserVO getUserById(String id) throws Exception {
         User user = userMapper.selectById(id);
         if (user == null) {
-            throw new UserNotFoundException("用户不存在");
+            throw new Exception("用户不存在");
         }
         UserVO userVO = new UserVO();
         BeanUtils.copyProperties(user,userVO);

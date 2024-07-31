@@ -20,7 +20,7 @@ public interface UserService {
     //登出
     Result logout();
 
-    UserVO getUserById(String id);
+    UserVO getUserById(String id) throws Exception;
 
     UserVO uploadAvatar(MultipartFile avatar,String id) throws IOException;
 }

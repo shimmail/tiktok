@@ -3,7 +3,7 @@ package org.example.tiktok.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import org.example.tiktok.exception.CommentException;
+import lombok.RequiredArgsConstructor;
 import org.example.tiktok.mapper.CommentMapper;
 import org.example.tiktok.mapper.VideoMapper;
 import org.example.tiktok.pojo.dto.CommentDTO;
@@ -22,18 +22,18 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class InteractionServiceImpl implements InteractionService {
-    @Autowired
-    VideoMapper videoMapper;
-    @Autowired
-    CommentMapper commentMapper;
+
+    private final VideoMapper videoMapper;
+    private final CommentMapper commentMapper;
 
     //视频评论
     @Override
-    public Result VideoComment(CommentDTO commentDTO) {
+    public Result VideoComment(CommentDTO commentDTO) throws Exception {
         Video video = videoMapper.selectById(commentDTO.getVideoId());
         if (video == null) {
-            throw new CommentException("视频不存在");
+            throw new Exception("视频不存在");
         }
 
         // 更新视频的评论数量
@@ -48,10 +48,10 @@ public class InteractionServiceImpl implements InteractionService {
 
     //评论回复
     @Override
-    public Result CommentReply(CommentDTO commentDTO) {
+    public Result CommentReply(CommentDTO commentDTO) throws Exception {
         Comment parentComment = commentMapper.selectById(commentDTO.getParentId());
         if (parentComment == null) {
-            throw new CommentException("评论不存在");
+            throw new Exception("评论不存在");
         }
 
         commentDTO.setVideoId(parentComment.getVideoId());

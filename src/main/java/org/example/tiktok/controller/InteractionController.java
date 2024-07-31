@@ -3,15 +3,12 @@ package org.example.tiktok.controller;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
 import org.example.tiktok.pojo.dto.CommentDTO;
-import org.example.tiktok.pojo.entity.Video;
 import org.example.tiktok.pojo.vo.CommentVO;
 import org.example.tiktok.result.Result;
 import org.example.tiktok.service.InteractionService;
 import org.example.tiktok.util.JWTUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
-import java.time.LocalDateTime;
 
 @Slf4j
 @RestController

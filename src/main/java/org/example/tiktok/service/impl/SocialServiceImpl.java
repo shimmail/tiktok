@@ -3,6 +3,7 @@ package org.example.tiktok.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.tiktok.exception.SocialException;
 import org.example.tiktok.mapper.SocialMapper;
@@ -21,12 +22,12 @@ import java.util.stream.Collectors;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class SocialServiceImpl implements SocialService {
 
-    @Autowired
-    SocialMapper socialMapper;
-    @Autowired
-    UserMapper userMapper;
+
+    private final SocialMapper socialMapper;
+    private final UserMapper userMapper;
 
     @Override
     @Transactional

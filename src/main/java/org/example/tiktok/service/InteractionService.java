@@ -7,9 +7,9 @@ import org.example.tiktok.pojo.vo.CommentVO;
 import org.example.tiktok.result.Result;
 
 public interface InteractionService {
-    Result VideoComment(CommentDTO commentDTO);
+    Result VideoComment(CommentDTO commentDTO) throws Exception;
 
-    Result CommentReply(CommentDTO commentDTO);
+    Result CommentReply(CommentDTO commentDTO) throws Exception;
 
 
     Result listVideoComment(String videoId, Page page);

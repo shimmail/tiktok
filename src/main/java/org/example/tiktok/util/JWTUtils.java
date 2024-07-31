@@ -83,12 +83,6 @@ public class JWTUtils {
         }
     }
 
-    /**
-     * Parses claims from the token
-     *
-     * @param token the JWT token
-     * @return the claims
-     */
     public static DecodedJWT parseClaims(String token) {
         JWTVerifier verifier = JWT.require(Algorithm.HMAC256(TOKEN_SECRET))
                 .withIssuer("auth0")

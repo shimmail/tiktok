@@ -1,6 +1,7 @@
 package org.example.tiktok.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import lombok.RequiredArgsConstructor;
 import org.example.tiktok.mapper.UserMapper;
 import org.example.tiktok.pojo.entity.LoginUser;
 import org.example.tiktok.pojo.entity.User;
@@ -14,16 +15,14 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Resource;
 import java.util.*;
 
 @Component
+@RequiredArgsConstructor
 public class UserDetailsServiceImpl implements UserDetailsService {
-    @Autowired
-    UserDetailsService userDetailsService;
 
-    @Autowired
-    private UserMapper userMapper;
-
+    private final UserMapper userMapper;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {

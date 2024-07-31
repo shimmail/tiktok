@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.tiktok.mapper.UserMapper;
 import org.example.tiktok.mapper.VideoMapper;
@@ -26,13 +27,11 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class VideoServiceImpl implements VideoService {
-    @Autowired
-    private RedisTemplate<String, String> redisTemplate;
-    @Autowired
-    VideoMapper videoMapper;
-    @Autowired
-    UserMapper userMapper;
+    private final VideoMapper videoMapper;
+    private final UserMapper userMapper;
+    private final RedisTemplate<String, String> redisTemplate;
 
 
     public static final String SCORE_RANK = "score_rank";
