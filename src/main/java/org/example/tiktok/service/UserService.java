@@ -23,4 +23,6 @@ public interface UserService {
     UserVO getUserById(String id) throws Exception;
 
     UserVO uploadAvatar(MultipartFile avatar,String id) throws IOException;
+
+
 }

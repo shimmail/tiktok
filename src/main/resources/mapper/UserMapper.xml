@@ -19,5 +19,9 @@
         FROM user
         WHERE username LIKE CONCAT('%', #{username}, '%')
     </select>
+    <select id="getUserRole" resultType="java.lang.String" parameterType="java.lang.String">
+        select role
+        from user where username = #{username}
+    </select>
 
 </mapper>

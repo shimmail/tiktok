@@ -86,12 +86,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         UserVO uservo = userMapper.selectByUsername(userDTO.getUsername());
         //使用userid生成token
         String token = JWTUtils.getToken(uservo.getId());
-        /*LoginUser loginUser = (LoginUser) authenticate.getPrincipal();*/
+        LoginUser loginUser = (LoginUser) authenticate.getPrincipal();
         String userId = uservo.getId();
         log.info("token:{}",token);
 
         //authenticate存入redis
-        redisCache.setCacheObject("login:"+userId,uservo,1, TimeUnit.DAYS);//有效期一天
+        redisCache.setCacheObject("login:"+userId,loginUser,1, TimeUnit.DAYS);//有效期一天
 
         return Result.success(uservo);
     }
@@ -124,6 +124,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Override
     @Transactional(rollbackFor = Exception.class)
     public UserVO uploadAvatar(MultipartFile avatar,String id) throws IOException {
+
+
 
         // 上传头像到OSS
         String avatarUrl =aliOSSUtils.uploadAvatar(avatar);

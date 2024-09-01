@@ -20,4 +20,6 @@ public interface UserMapper extends BaseMapper<User> {
     UserVO selectByUsername(String username);
 
     List<User> selectByUsernameLike(String username);
+
+    String getUserRole(String username);
 }

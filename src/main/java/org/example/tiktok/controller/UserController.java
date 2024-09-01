@@ -75,6 +75,7 @@ public class UserController {
 
     //上传头像
     @PutMapping("/avatar/upload")
+    @PreAuthorize("hasAuthority('user')")
     public Result<UserVO> uploadAvatar(@RequestParam("data") MultipartFile avatar,
                                        @RequestHeader("Access-Token") String accessToken) {
         try {
